@@ -1,1 +1,16 @@
 #We assume that physical address to Cache mapping is known, in particular, we know the position of set index bits.
+
+#Threshold found for L3 is (80-120). 
+
+#If set is filled for any block then does it searches for free space in other slices or uses cache replacement policy in the same slice? - From our code seems that replacement policy is across slices, and former is true. 
+
+#Index bits for L2 is same as Index bits for L3. 6-15 bits are used to decide set. Hence to evict any block whose addresss is x from L2 only, just access x+2^16*i where i is from 1 to 4. 
+
+#When running only for 31 blocks then all have latency of about 60 which means coming from L2 Cache, but associativity of L2 is 4, how?
+
+#Latency of L3 coming to be 50-240. 
+
+#L3 hits are distributed based on slice. Timing of about 200 for own slice and 250 for other slices. Good result. 
+
+
+

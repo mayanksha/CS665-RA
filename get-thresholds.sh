@@ -1,4 +1,4 @@
-memory=(1 2 4 )
+memory=(1 2 4 8 16)
 
 gcc -g -O0 util.c page-size-test.c
 if [ $? -ne 0 ]

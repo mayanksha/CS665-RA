@@ -57,4 +57,5 @@ int main (int argv, char** argc) {
         printf ("%ld\n", accesses[i].read_cycles);
     }
     /* printf ("Addresses accessed = %lld\n", N_ACCESSES); */
+    return 0;
 }
