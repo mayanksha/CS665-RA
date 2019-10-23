@@ -35,8 +35,8 @@ int main (int argv, char** argc) {
     memset (data, '\0', N_ACCESSES * sizeof (struct s_access));
 
     for (int i = 0; i < N_ACCESSES; i++)
-        /* accesses[i].offset = rand() % (N_ACCESSES); */
-        accesses[i].offset = i;
+        accesses[i].offset = rand() % (N_ACCESSES);
+        /* accesses[i].offset = i; */
 
     for (int i = 0; i < N_ACCESSES; i++) {
         volatile char x = data[accesses[i].offset * STRIDE_LENGTH];

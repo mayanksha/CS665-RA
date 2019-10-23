@@ -3,3 +3,4 @@ vgcore*
 *.out
 *.o
 temp
+data/*
