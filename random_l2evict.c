@@ -6,6 +6,12 @@ inline void flush(const char *adrs) {
   asm __volatile__ ("mfence\nclflush 0(%0)" : : "r" (adrs) :);
 }
 
+int max(int a,int b){
+    if(a>b)
+        return a;
+    return b;
+}
+
 void access_the_blocks(int time_or_not, int pages,int naccesses,char** arr,CYCLES* time,int* order){
 
     int occur[31];
@@ -37,17 +43,19 @@ void access_the_blocks(int time_or_not, int pages,int naccesses,char** arr,CYCLE
     }
 }
 
+
 CYCLES* myfunc(int pages,char** arr,int naccesses,int* order){
 
-    for(int i=0;i<pages;i++){
+    for(int i=0;i<max(pages,3);i++){
         arr[i] = (char*)malloc(sizeof(char)*(2<<22));
         unsigned long temp = (unsigned long)arr[i];
         arr[i] = (char*)(((temp>>21)+1)<<21);
         //printf("%p %p\n",temp,arr[i]);
     }
 
+    access_the_blocks(0,3,93,arr,NULL,order);
     for(int i=0;i<31;i++){
-        for(int j=0;j<pages;j++)
+        for(int j=0;j<max(pages,3);j++)
             flush(&arr[j][(2<<16)*i]);
     }
 
@@ -63,8 +71,8 @@ int main (int argv, char** argc) {
     int naccesses = atoi(argc[1]);
     int pages = (naccesses/31)+1;
     //int pages = 2;
-    char** arr = (char**)malloc(pages*sizeof(char*));
-    int *order = (CYCLES*)malloc(naccesses*sizeof(int));
+    char** arr = (char**)malloc(max(pages,3)*sizeof(char*));
+    int *order = (int*)malloc(max(naccesses,93)*sizeof(int));
     CYCLES* time = myfunc(pages,arr,naccesses,order);
 
     // volatile int *xx = malloc(sizeof(int));

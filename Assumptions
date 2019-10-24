@@ -17,3 +17,9 @@
 #gcc -g -O0 util.c random_l2evict.c && ./a.out > temp && python plot_l2_evict.py temp
 
 #Even if memory hits are zero for one iteration that means that is not the minimal number required to evict one cache line.
+
+#We tuned the limit of l3 latency to 230 which gives at least 1 memory hit for 77 blocks in a script of 5000, and 64 gives zero at least once in script of 5000. 
+
+#For thrashing one specific L3 cache set, so that it is empty before experimentation, access x,x+2^16,x+2^16*2...x+2^16*64 and then flush each of them. 
+
+#After eviciting exactly one block from L3 by accessing 65 blocks and monitoring exactly one memory hit
