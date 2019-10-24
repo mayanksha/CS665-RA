@@ -12,5 +12,8 @@
 
 #L3 hits are distributed based on slice. Timing of about 200 for own slice and 250 for other slices. Good result. 
 
+#modprobe msr && rdmsr -p0 0x1a4 && wrmsr -p0 0x1a4 15 for turning off hardware prefetching on processor 0. An alternative to randomised accesses. 
 
+#gcc -g -O0 util.c random_l2evict.c && ./a.out > temp && python plot_l2_evict.py temp
 
+#Even if memory hits are zero for one iteration that means that is not the minimal number required to evict one cache line.

@@ -6,12 +6,44 @@ inline void flush(const char *adrs) {
   asm __volatile__ ("mfence\nclflush 0(%0)" : : "r" (adrs) :);
 }
 
-CYCLES* myfunc(int pages,char** arr){
+void access_the_blocks(int time_or_not, int pages,int naccesses,char** arr,CYCLES* time,int* order){
+
+    int occur[31];
+    int index_of_block=0;
+    for(int j=0;j<pages;j++){
+        int iter = 31;
+        for(int i=0;i<31;i++)
+            occur[i]=0;
+        if(j==pages-1)
+            iter = naccesses-((pages-1)*31);
+
+        for(int i=0;i<iter;i++){
+            int index = rand()%(iter);
+            while(occur[index]!=0){
+                index = rand()%(iter);
+            }
+            occur[index]=1;
+            if(time_or_not){
+                CYCLES start;
+                start = rdtscp ();
+                volatile char w = arr[j][(2<<16)*index];
+                time[index+31*j] = rdtscp()-start;    
+            }else{
+                volatile char w = arr[j][(2<<16)*index];    
+                order[index+31*j] = index_of_block;
+                index_of_block++;
+            }
+        }    
+    }
+}
+
+CYCLES* myfunc(int pages,char** arr,int naccesses,int* order){
 
     for(int i=0;i<pages;i++){
         arr[i] = (char*)malloc(sizeof(char)*(2<<22));
         unsigned long temp = (unsigned long)arr[i];
-        arr[i] = (char*)((temp>>21)<<21);
+        arr[i] = (char*)(((temp>>21)+1)<<21);
+        //printf("%p %p\n",temp,arr[i]);
     }
 
     for(int i=0;i<31;i++){
@@ -19,45 +51,22 @@ CYCLES* myfunc(int pages,char** arr){
             flush(&arr[j][(2<<16)*i]);
     }
 
-    int occur[31];
-    CYCLES *time = (CYCLES*)malloc(pages*31*sizeof(CYCLES));
-
-    for(int j=0;j<pages;j++){
-        for(int i=0;i<31;i++)
-            occur[i]=0;
-        for(int i=0;i<31;i++){
-            int index = rand()%32;
-            while(occur[index]!=0){
-                index = rand()%32;
-            }
-            occur[index]=1;
-            volatile char w = arr[j][(2<<16)*index];
-        }    
-    }
-
-    for(int j=0;j<pages;j++){
-        for(int i=0;i<31;i++)
-            occur[i]=0;
-        for(int i=0;i<31;i++){
-            int index = rand()%32;
-            while(occur[index]!=0){
-                index = rand()%32;
-            }
-            occur[index]=1;
-            CYCLES start;
-            start = rdtscp ();
-            volatile char w = arr[j][(2<<16)*index];
-            time[index+31*j] = rdtscp()-start;
-        }
-    }
+    CYCLES *time = (CYCLES*)malloc(naccesses*sizeof(CYCLES));
+    access_the_blocks(0,pages,naccesses,arr,NULL,order);
+    access_the_blocks(1,pages,naccesses,arr,time,NULL);
     
     return time;
 }
+
 int main (int argv, char** argc) {
     
-    int pages = 4;
+    int naccesses = atoi(argc[1]);
+    int pages = (naccesses/31)+1;
+    //int pages = 2;
     char** arr = (char**)malloc(pages*sizeof(char*));
-    CYCLES* time = myfunc(pages,arr);
+    int *order = (CYCLES*)malloc(naccesses*sizeof(int));
+    CYCLES* time = myfunc(pages,arr,naccesses,order);
+
     // volatile int *xx = malloc(sizeof(int));
     // int yyy,yy;
     // *xx=1;
@@ -68,13 +77,27 @@ int main (int argv, char** argc) {
     // CYCLES tt= rdtscp()-start;
     // printf("time hit %d\n",tt);        //code proves that L1/L2 hit is 50 cycles max.
     
-    int count=0;
-    for(int i=0;i<pages*31;i++){
-        if(time[i]<=240 && time[i]>=60){
-            count++;
+    int memory[naccesses];
+    for(int i=0;i<naccesses;i++)
+        memory[i] = -1;
+
+    int l3=0;
+    int l2=0;
+    int cache_evicted = -1;
+    for(int i=0;i<naccesses;i++){
+        if(time[i]<=230 && time[i]>=60){
+            l3++;
         }
-        printf("%d\n",time[i]);
+        else if(time[i]<60)
+            l2++;
+        else{
+            cache_evicted = order[i];
+        }
+        //printf("%d\n",time[i]);
     }
-    printf("%d",count);
+
+    printf("%d\n%d\n",naccesses-l2-l3,cache_evicted);
+    //printf("L3 hits are %d\n",count);
+    //printf("L2 hits are %d\n",l2 );
     return 0;
 }
