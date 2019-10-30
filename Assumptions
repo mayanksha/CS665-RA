@@ -22,4 +22,6 @@
 
 #For thrashing one specific L3 cache set, so that it is empty before experimentation, access x,x+2^16,x+2^16*2...x+2^16*64 and then flush each of them. 
 
-#After eviciting exactly one block from L3 by accessing 65 blocks and monitoring exactly one memory hit
+#After eviciting exactly one block from L3 by accessing 65 blocks and monitoring exactly one memory hit.
+
+#wrmsr -p0 0x1a4 15 && wrmsr -p1 0x1a4 15 && wrmsr -p2 0x1a4 15 && wrmsr -p3 0x1a4 15

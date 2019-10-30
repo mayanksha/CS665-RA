@@ -44,12 +44,12 @@ void access_the_blocks(int time_or_not, int pages,int naccesses,char** arr,CYCLE
 }
 
 
-CYCLES* myfunc(int pages,char** arr,int naccesses,int* order){
+CYCLES* myfunc(int pages,char** arr,int naccesses,int* order,int cache_set_no){
 
     for(int i=0;i<max(pages,3);i++){
         arr[i] = (char*)malloc(sizeof(char)*(2<<22));
         unsigned long temp = (unsigned long)arr[i];
-        arr[i] = (char*)(((temp>>21)+1)<<21);
+        arr[i] = (char*)((((temp>>21)+1)<<21) + ((2<<6)*cache_set_no));
         //printf("%p %p\n",temp,arr[i]);
     }
 
@@ -69,11 +69,12 @@ CYCLES* myfunc(int pages,char** arr,int naccesses,int* order){
 int main (int argv, char** argc) {
     
     int naccesses = atoi(argc[1]);
+    int cache_set_no = atoi(argc[2]);
     int pages = (naccesses/31)+1;
     //int pages = 2;
     char** arr = (char**)malloc(max(pages,3)*sizeof(char*));
     int *order = (int*)malloc(max(naccesses,93)*sizeof(int));
-    CYCLES* time = myfunc(pages,arr,naccesses,order);
+    CYCLES* time = myfunc(pages,arr,naccesses,order,cache_set_no);
 
     // volatile int *xx = malloc(sizeof(int));
     // int yyy,yy;

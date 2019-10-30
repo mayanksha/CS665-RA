@@ -1,21 +1,23 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import time
 
-if (len(sys.argv) != 2):
-    print("2 Arguments must be given!")
+if (len(sys.argv) != 3):
+    print("1 Argument must be given!")
     sys.exit (-1)
 
 a = np.loadtxt(sys.argv[1])
+cache_sets = sys.argv[2]
 # print("L3 hits = "+str(a[-1]))
 # a=a[:-1]
 # nopages=len(a)/31
 
 from matplotlib.ticker import FormatStrFormatter
 
-fig, ax = plt.subplots()
-#counts, bins, patches = ax.hist(a,bins=16, range=(1, 64), facecolor='yellow', edgecolor='gray')
-counts, bins, patches = ax.hist(a,facecolor='yellow', edgecolor='gray')
+fig, ax = plt.subplots(figsize=(30,18))
+#counts, bins, patches = ax.hist(a,bins=64, range=(1, 64), facecolor='yellow', edgecolor='gray')
+counts, bins, patches = ax.hist(a,facecolor='yellow', edgecolor='gray', bins=64)
 print(counts)
 print(bins)
 # Set the ticks to be at the edges of the bins.
@@ -46,6 +48,6 @@ for count, x in zip(counts, bin_centers):
 
 # Give ourselves some more room at the bottom of the plot
 plt.subplots_adjust(bottom=0.15)
-plt.title("Frequency of Evicted Block Number When eviction is exactly 1")
-plt.savefig(sys.argv[1] + ".png")
+plt.title("Frequency of Evicted Block Number When eviction is exactly 1 for Cache Set "+str(cache_sets))
+plt.savefig("./eviction_plots/golden-" + str(cache_sets)+ "-" + str(time.time()) + ".png")
 #plt.show()
