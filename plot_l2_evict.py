@@ -17,9 +17,7 @@ from matplotlib.ticker import FormatStrFormatter
 
 fig, ax = plt.subplots(figsize=(30,18))
 #counts, bins, patches = ax.hist(a,bins=64, range=(1, 64), facecolor='yellow', edgecolor='gray')
-counts, bins, patches = ax.hist(a,facecolor='yellow', edgecolor='gray', bins=64)
-print(counts)
-print(bins)
+counts, bins, patches = ax.hist(a,facecolor='yellow', edgecolor='gray', bins=16)
 # Set the ticks to be at the edges of the bins.
 ax.set_xticks(bins)
 # Set the xaxis's tick labels to be formatted with 1 decimal place...
@@ -49,5 +47,5 @@ for count, x in zip(counts, bin_centers):
 # Give ourselves some more room at the bottom of the plot
 plt.subplots_adjust(bottom=0.15)
 plt.title("Frequency of Evicted Block Number When eviction is exactly 1 for Cache Set "+str(cache_sets))
-plt.savefig("./eviction_plots/golden-" + str(cache_sets)+ "-" + str(time.time()) + ".png")
+plt.savefig("./slice_eviction_plots/golden-" + str(cache_sets)+ "-" + str(time.time()) + ".png")
 #plt.show()

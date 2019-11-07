@@ -1,7 +1,12 @@
 filename="golden_file.txt"
+sudo wrmsr -p0 0x1a4 15
+sudo wrmsr -p1 0x1a4 15
+sudo wrmsr -p2 0x1a4 15
+sudo wrmsr -p3 0x1a4 15
+
 declare -a indices
 counter=0
-for set in `seq 0 1 1024`
+for set in `seq 10 1 1024`
 do
 	for iter in `seq 80`
 	do

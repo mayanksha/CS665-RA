@@ -14,6 +14,8 @@
 
 #modprobe msr && rdmsr -p0 0x1a4 && wrmsr -p0 0x1a4 15 for turning off hardware prefetching on processor 0. An alternative to randomised accesses. 
 
+#sudo sysctl -p is required for loading huge pages before exporting. 
+
 #gcc -g -O0 util.c random_l2evict.c && ./a.out > temp && python plot_l2_evict.py temp
 
 #Even if memory hits are zero for one iteration that means that is not the minimal number required to evict one cache line.
@@ -25,3 +27,19 @@
 #After eviciting exactly one block from L3 by accessing 65 blocks and monitoring exactly one memory hit.
 
 #wrmsr -p0 0x1a4 15 && wrmsr -p1 0x1a4 15 && wrmsr -p2 0x1a4 15 && wrmsr -p3 0x1a4 15
+
+#Force the accesses to one slice by seeing the latency difference, monitor replacement policy in one slice. 
+
+#Only 10 sets are "halting" 0-10, not halting for onwards 11, might be 10 leader sets, 2^10=1024. 
+
+#210-230 slice of other. 60-210 my own slice. 
+
+#More nice behaviour only working on set number 257 or random number instead of set 0 or 1 , as such sets will cause address to be quite generic so other processes can interfere. 
+
+
+#Calculate the thresholds dynamically!. - imp
+
+#4th Block is evicted when accessing in a slice. - 14,14,7,8.
+Predominantly 14,15 are evicted!!! - MRU type of policy in Set number 258. 
+Predominantly 0,1 getting evicted (30% of time) - LRU type policy in Set Number 0.
+
